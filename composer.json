@@ -1,0 +1,28 @@
+{
+    "name": "elixir/elixir-config",
+    "description": "Component config",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "elixir",
+        "config"
+    ],
+    "homepage": "https://github.com/cedtanghe/elixir-config",
+    "require": {
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "phpunit/PHPUnit": "~4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Elixir\\Config\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Elixir\\Test\\Config\\": "tests/"
+        }
+    },
+    "suggest": {
+    }
+}
