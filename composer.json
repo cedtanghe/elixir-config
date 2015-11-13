@@ -1,6 +1,7 @@
 {
     "name": "elixir/elixir-config",
     "description": "Component config",
+    "version": "1.0.0",
     "license": "BSD-3-Clause",
     "keywords": [
         "elixir",
@@ -19,7 +20,7 @@
     ],
     "require": {
         "php": ">=5.4",
-        "elixir/elixir-stdlib": "~1.0"
+        "elixir/elixir-stdlib": "*"
     },
     "require-dev": {
         "phpunit/PHPUnit": "~4.0"
@@ -35,6 +36,6 @@
         }
     },
     "suggest": {
-        "elixir/elixir-filter": "~1.0"
+        "elixir/elixir-filter": "*"
     }
 }
