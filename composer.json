@@ -7,12 +7,22 @@
         "config"
     ],
     "homepage": "https://github.com/cedtanghe/elixir-config",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/cedtanghe/elixir-stdlib"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/cedtanghe/elixir-filter"
+        }
+    ],
     "require": {
-        "php": ">=5.4"
+        "php": ">=5.4",
+        "elixir/elixir-stdlib": "~1.0"
     },
     "require-dev": {
-        "phpunit/PHPUnit": "~4.0",
-        "elixir/elixir-stdlib": "~1.0"
+        "phpunit/PHPUnit": "~4.0"
     },
     "autoload": {
         "psr-4": {
