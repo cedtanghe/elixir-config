@@ -12,7 +12,7 @@ use Elixir\STDLib\ArrayUtils;
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class Config implements ConfigInterface, CacheableInterface, \ArrayAccess, \Iterator, \Countable, \JsonSerializable
+class Config implements ConfigInterface, CacheableInterface, \ArrayAccess, \Iterator, \Countable
 {
     /**
      * @var string 
@@ -288,7 +288,7 @@ class Config implements ConfigInterface, CacheableInterface, \ArrayAccess, \Iter
      */
     public function current() 
     {
-        return $this->get(key($this->data));
+        return $this->get($this->key());
     }
 
     /**
@@ -312,7 +312,7 @@ class Config implements ConfigInterface, CacheableInterface, \ArrayAccess, \Iter
      */
     public function valid() 
     {
-        return null !== key($this->data);
+        return null !== $this->key();
     }
 
     /**
@@ -360,14 +360,6 @@ class Config implements ConfigInterface, CacheableInterface, \ArrayAccess, \Iter
         }
 
         $this->data = $recursive ? array_merge_recursive($this->data, $data) : array_merge($this->data, $data);
-    }
-    
-    /**
-     * @ignore
-     */
-    public function jsonSerialize() 
-    {
-        return $this->__debugInfo();
     }
     
     /**
