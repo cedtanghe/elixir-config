@@ -2,32 +2,32 @@
 
 namespace Elixir\Config\Writer;
 
-use Elixir\Config\Writer\WriterAbstract;
+use Elixir\Config\Writer\WriterInterface;
 
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class Arr extends WriterAbstract 
+class Arr implements WriterInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function write() 
+    public function write(array $data) 
     {
-        return $this->config->all();
+        return $data;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function export($file)
+    public function export(array $data, $file)
     {
         if (!strstr($file, '.php'))
         {
             $file .= '.php';
         }
         
-        file_put_contents($file, '<?php return ' . var_export($this->write(), true) . ';');
+        file_put_contents($file, '<?php return ' . var_export($this->write($data), true) . ';');
         return file_exists($file);
     }
 }

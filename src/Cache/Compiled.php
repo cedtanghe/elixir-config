@@ -183,10 +183,9 @@ class Compiled implements CacheableInterface
                 $this->writer = WriterFactory::create($this->getCacheFile());
             }
             
-            $this->writer->setConfig($this->config);
-            $writed = $this->writer->export($this->getCacheFile());
-            
+            $writed = $this->writer->export($this->config->all(), $this->getCacheFile());
             $this->config->remove('_version');
+            
             return $writed;
         }
         

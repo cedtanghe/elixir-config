@@ -2,32 +2,32 @@
 
 namespace Elixir\Config\Writer;
 
-use Elixir\Config\Writer\WriterAbstract;
+use Elixir\Config\Writer\WriterInterface;
 
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class JSON extends WriterAbstract 
+class JSON implements WriterInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function write() 
+    public function write(array $data) 
     {
-        return json_encode($this->config->all(), JSON_PRETTY_PRINT);
+        return json_encode($data, JSON_PRETTY_PRINT);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function export($file)
+    public function export(array $data, $file)
     {
         if (!strstr($file, '.json'))
         {
             $file .= '.json';
         }
         
-        file_put_contents($file, $this->write());
+        file_put_contents($file, $this->write($data));
         return file_exists($file);
     }
 }

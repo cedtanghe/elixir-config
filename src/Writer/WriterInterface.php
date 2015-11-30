@@ -2,26 +2,21 @@
 
 namespace Elixir\Config\Writer;
 
-use Elixir\Config\ConfigInterface;
-
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
 interface WriterInterface
 {
     /**
-     * @param ConfigInterface $value
-     */
-    public function setConfig(ConfigInterface $value);
-
-    /**
+     * @param array $data
      * @return mixed
      */
-    public function write();
+    public function write(array $data);
 
     /**
+     * @param array $data
      * @param string $file
      * @return boolean
      */
-    public function export($file);
+    public function export(array $data, $file);
 }

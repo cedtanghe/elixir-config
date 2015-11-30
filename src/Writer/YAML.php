@@ -2,12 +2,12 @@
 
 namespace Elixir\Config\Writer;
 
-use Elixir\Config\Writer\WriterAbstract;
+use Elixir\Config\Writer\WriterInterface;
 
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class YAML extends WriterAbstract 
+class YAML implements WriterInterface
 {
     /**
      * @var callable 
@@ -15,13 +15,10 @@ class YAML extends WriterAbstract
     protected $YAMLEncoder;
 
     /**
-     * {@inheritdoc}
      * @param callable $YAMLEncoder
      */
-    public function __construct(ConfigInterface $config = null, callable $YAMLEncoder = null)
+    public function __construct(callable $YAMLEncoder = null)
     {
-        parent::__construct($config);
-
         if (null !== $YAMLEncoder)
         {
             $this->setYAMLEncoder($YAMLEncoder);
@@ -54,22 +51,22 @@ class YAML extends WriterAbstract
     /**
      * {@inheritdoc}
      */
-    public function write() 
+    public function write(array $data) 
     {
-        return call_user_func($this->getYAMLEncoder(), $this->config->all());
+        return call_user_func($this->getYAMLEncoder(), $data);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function export($file)
+    public function export(array $data, $file)
     {
         if (!strstr($file, '.yml'))
         {
             $file .= '.yml';
         }
         
-        file_put_contents($file, $this->write());
+        file_put_contents($file, $this->write($data));
         return file_exists($file);
     }
 }
