@@ -12,7 +12,7 @@ use Elixir\STDLib\ArrayUtils;
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class Config implements ConfigInterface, CacheableInterface, \ArrayAccess, \Iterator, \Countable
+class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countable
 {
     /**
      * @var string 

@@ -5,7 +5,7 @@ namespace Elixir\Config;
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-interface ConfigInterface 
+interface ConfigInterface extends \ArrayAccess
 {
     /**
      * @param mixed $key
