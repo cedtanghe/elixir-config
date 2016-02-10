@@ -6,6 +6,7 @@ use Elixir\Config\Cache\CacheableInterface;
 use Elixir\Config\ConfigInterface;
 use Elixir\Config\Loader\LoaderFactory;
 use Elixir\Config\Processor\ProcessorInterface;
+use Elixir\Config\Resource\ResourceInterface;
 use Elixir\Config\Writer\WriterInterface;
 use Elixir\STDLib\ArrayUtils;
 
@@ -126,6 +127,11 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
         {
             $options['environment'] = $this->environment;
             $options['recursive'] = isset($options['recursive']) ? $options['recursive'] : false;
+            
+            if ($config instanceof ResourceInterface)
+            {
+                $config = $config($this);
+            }
             
             foreach ((array)$config as $conf) 
             {
