@@ -165,17 +165,7 @@ class Compiled implements CacheableInterface
      */
     public function loadFromCache($file, array $options = []) 
     {
-        $this->loadCache();
-        
-        if ($this->cacheLoaded())
-        {
-            return true;
-        }
-        else
-        {
-            $loader = LoaderFactory::create($file, $options);
-            return $loader->load($file, $options['recursive']);
-        }
+        return $this->cacheLoaded();
     }
     
     /**
