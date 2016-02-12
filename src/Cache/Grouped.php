@@ -14,22 +14,12 @@ class Grouped implements CacheableInterface
     /**
      * @var string 
      */
-    protected $debug = true;
-    
-    /**
-     * @var string 
-     */
     protected $path;
 
     /**
      * @var string 
      */
     protected $name;
-
-    /**
-     * @var ConfigInterface 
-     */
-    protected $config;
 
     /**
      * @var array 
@@ -45,6 +35,11 @@ class Grouped implements CacheableInterface
      * @var boolean 
      */
     protected $loaded = false;
+    
+    /**
+     * @var ConfigInterface
+     */
+    protected $config;
 
     /**
      * @var array 
@@ -59,9 +54,8 @@ class Grouped implements CacheableInterface
     /**
      * @param string $path
      * @param string $name
-     * @param boolean $debug
      */
-    public function __construct($path = null, $name = 'cache', $debug = true) 
+    public function __construct($path = null, $name = 'cache') 
     {
         $path = $path ? : 'application' . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
         
@@ -72,13 +66,12 @@ class Grouped implements CacheableInterface
 
         $this->path = rtrim($path, DIRECTORY_SEPARATOR);
         $this->name = $name;
-        $this->debug = $debug;
     }
-
+    
     /**
      * {@inheritdoc}
      */
-    public function setConfig(ConfigInterface $value) 
+    public function setConfig(ConfigInterface $value)
     {
         $this->config = $value;
     }
@@ -140,7 +133,7 @@ class Grouped implements CacheableInterface
         
         if ($this->isFresh($file)) 
         {
-            $data = $this->cachedata[md5($file)];
+            $data = $this->cachedata[$file];
         }
         else
         {
@@ -169,16 +162,9 @@ class Grouped implements CacheableInterface
      */
     protected function isFresh($file)
     {
-        if(!$this->debug && $this->cacheLoaded())
+        if (!empty($this->metadata) && isset($this->metadata[$file]))
         {
-            return true;
-        }
-        
-        $crypted = md5($file);
-        
-        if (!empty($this->metadata) && isset($this->metadata[$crypted]))
-        {
-            return filemtime($file) <= $this->metadata[$crypted];
+            return filemtime($file) <= $this->metadata[$file];
         }
 
         return false;
@@ -191,13 +177,15 @@ class Grouped implements CacheableInterface
     {
         if ($this->build)
         {
+            $this->build = false;
+            
             $metadata = ['_type' => __CLASS__];
             $cachedata = [];
             
             foreach ($this->files as $file => $data)
             {
-                $metadata[md5($file)] = filemtime($file);
-                $cachedata[md5($file)] = $data;
+                $metadata[$file] = filemtime($file);
+                $cachedata[$file] = $data;
             }
             
             $writed = file_put_contents(

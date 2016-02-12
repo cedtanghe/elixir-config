@@ -14,22 +14,12 @@ class PreservePHP implements CacheableInterface
     /**
      * @var string 
      */
-    protected $debug = true;
-    
-    /**
-     * @var string 
-     */
     protected $path;
 
     /**
      * @var string 
      */
     protected $name;
-
-    /**
-     * @var ConfigInterface 
-     */
-    protected $config;
 
     /**
      * @var array 
@@ -45,6 +35,11 @@ class PreservePHP implements CacheableInterface
      * @var boolean 
      */
     protected $loaded = false;
+    
+    /**
+     * @var ConfigInterface
+     */
+    protected $config;
 
     /**
      * @var array 
@@ -59,9 +54,8 @@ class PreservePHP implements CacheableInterface
     /**
      * @param string $path
      * @param string $name
-     * @param boolean $debug
      */
-    public function __construct($path = null, $name = 'cache', $debug = true) 
+    public function __construct($path = null, $name = 'cache') 
     {
         define('ELIXIR_CONFIG_CACHE', true);
         
@@ -74,13 +68,12 @@ class PreservePHP implements CacheableInterface
 
         $this->path = rtrim($path, DIRECTORY_SEPARATOR);
         $this->name = $name;
-        $this->debug = $debug;
     }
-
+    
     /**
      * {@inheritdoc}
      */
-    public function setConfig(ConfigInterface $value) 
+    public function setConfig(ConfigInterface $value)
     {
         $this->config = $value;
     }
@@ -145,11 +138,11 @@ class PreservePHP implements CacheableInterface
             if (strstr($file, '.php'))
             {
                 $loader = LoaderFactory::create($file, $options);
-                $data = $loader->load($this->cachedata[md5($file)], $options['recursive']);
+                $data = $loader->load($this->cachedata[$file], $options['recursive']);
             }
             else
             {
-                $data = $this->cachedata[md5($file)];
+                $data = $this->cachedata[$file];
             }
         }
         else
@@ -189,21 +182,14 @@ class PreservePHP implements CacheableInterface
      */
     protected function isFresh($file)
     {
-        if (!$this->debug && $this->cacheLoaded())
+        if (!empty($this->metadata) && isset($this->metadata[$file]))
         {
-            return true;
-        }
-        
-        $crypted = md5($file);
-        
-        if (!empty($this->metadata) && isset($this->metadata[$crypted]))
-        {
-            return filemtime($file) <= $this->metadata[$crypted];
+            return filemtime($file) <= $this->metadata[$file];
         }
 
         return false;
     }
-
+    
     /**
      * {@inheritdoc}
      */
@@ -211,6 +197,8 @@ class PreservePHP implements CacheableInterface
     {
         if ($this->build)
         {
+            $this->build = false;
+            
             $metadata = ['_type' => __CLASS__];
             $cachedata = "<?php \n\n";
             $cachedata .= 'if (!defined("ELIXIR_CONFIG_CACHE")) { header("HTTP/1.0 403 Forbidden"); exit(); }';
@@ -218,8 +206,8 @@ class PreservePHP implements CacheableInterface
             
             foreach ($this->files as $file => $data)
             {
-                $metadata[md5($file)] = filemtime($file);
-                $cachedata .= sprintf('\'%s\' => %s,', md5($file), $data) . "\n";
+                $metadata[$file] = filemtime($file);
+                $cachedata .= sprintf('\'%s\' => %s,', $file, $data) . "\n";
             }
             
             $cachedata .= "];";

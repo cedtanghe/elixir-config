@@ -29,11 +29,6 @@ class Compiled implements CacheableInterface
     protected $file;
 
     /**
-     * @var ConfigInterface 
-     */
-    protected $config;
-
-    /**
      * @var boolean 
      */
     protected $build = false;
@@ -47,6 +42,11 @@ class Compiled implements CacheableInterface
      * @var WriterInterface 
      */
     protected $writer;
+    
+    /**
+     * @var ConfigInterface
+     */
+    protected $config;
 
     /**
      * @var array 
@@ -89,6 +89,14 @@ class Compiled implements CacheableInterface
     }
     
     /**
+     * {@inheritdoc}
+     */
+    public function setConfig(ConfigInterface $value)
+    {
+        $this->config = $value;
+    }
+    
+    /**
      * @param WriterInterface $value
      */
     public function setWriter(WriterInterface $value)
@@ -102,14 +110,6 @@ class Compiled implements CacheableInterface
     public function getWriter()
     {
         return $this->writer;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setConfig(ConfigInterface $value) 
-    {
-        $this->config = $value;
     }
     
     /**
@@ -137,7 +137,7 @@ class Compiled implements CacheableInterface
                 return false;
             }
             
-            $this->config->replace($this->cachedata);
+            $this->config->merge($this->cachedata);
             return true;
         } 
         else
@@ -159,14 +159,23 @@ class Compiled implements CacheableInterface
         
         return null !== $this->cachedata;
     }
-
+    
     /**
      * {@inheritdoc}
      */
     public function loadFromCache($file, array $options = []) 
     {
         $this->loadCache();
-        return $this->cacheLoaded();
+        
+        if ($this->cacheLoaded())
+        {
+            return true;
+        }
+        else
+        {
+            $loader = LoaderFactory::create($file, $options);
+            return $loader->load($file, $options['recursive']);
+        }
     }
     
     /**
@@ -174,18 +183,21 @@ class Compiled implements CacheableInterface
      */
     public function exportToCache() 
     {
+        if ($this->cachedata && count(array_diff_key($this->config->all(), $this->cachedata)) > 0)
+        {
+            $this->build = true;
+        }
+        
         if ($this->build)
         {
-            $this->config->set('_version', $this->cacheVersion);
+            $this->build = false;
             
             if (null === $this->writer)
             {
                 $this->writer = WriterFactory::create($this->getCacheFile());
             }
             
-            $writed = $this->writer->export($this->config->all(), $this->getCacheFile());
-            $this->config->remove('_version');
-            
+            $writed = $this->writer->export(['_version' => $this->cacheVersion] + $this->config->all(), $this->getCacheFile());
             return $writed;
         }
         

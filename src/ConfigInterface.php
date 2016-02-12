@@ -2,11 +2,19 @@
 
 namespace Elixir\Config;
 
+use Elixir\Config\Writer\WriterInterface;
+
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
 interface ConfigInterface extends \ArrayAccess
 {
+    /**
+     * @param mixed $config
+     * @param array $options
+     */
+    public function load($config, array $options = []);
+    
     /**
      * @param mixed $key
      * @return boolean
@@ -40,6 +48,13 @@ interface ConfigInterface extends \ArrayAccess
      * @param array $data
      */
     public function replace(array $data);
+    
+    /**
+     * @param WriterInterface $writer
+     * @param string $file
+     * @return boolean
+     */
+    public function export(WriterInterface $writer, $file);
 
     /**
      * @param ConfigInterface|array

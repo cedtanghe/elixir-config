@@ -25,7 +25,7 @@ interface CacheableInterface
     public function cacheLoaded();
     
     /**
-     * @param mixed $file
+     * @param string $file
      * @return array
      */
     public function loadFromCache($file, array $options = []);
