@@ -58,7 +58,6 @@ interface ConfigInterface extends \ArrayAccess
 
     /**
      * @param ConfigInterface|array
-     * @param boolean $recursive
      */
-    public function merge($data, $recursive = false);
+    public function merge($data);
 }

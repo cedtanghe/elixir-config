@@ -9,8 +9,7 @@ interface LoaderInterface
 {
     /**
      * @param mixed $config
-     * @param boolean $recursive
      * @return array
      */
-    public function load($config, $recursive = false);
+    public function load($config);
 }

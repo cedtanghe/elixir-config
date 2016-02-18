@@ -54,13 +54,13 @@ class YAML extends Arr
     /**
      * {@inheritdoc}
      */
-    public function load($config, $recursive = false)
+    public function load($config)
     {
         if (is_file($config)) 
         {
             $config = file_get_contents($config);
         }
         
-        return parent::load(call_user_func($this->getYAMLEncoder(), $config), $recursive);
+        return parent::load(call_user_func($this->getYAMLEncoder(), $config));
     }
 }

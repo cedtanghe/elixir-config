@@ -12,7 +12,7 @@ class Arr extends LoaderAbstract
     /**
      * {@inheritdoc}
      */
-    public function load($config, $recursive = false) 
+    public function load($config) 
     {
         if (!is_array($config)) 
         {
@@ -63,8 +63,8 @@ class Arr extends LoaderAbstract
 
         foreach (array_reverse($supers) as $data)
         {
-            $data = $this->parse($data, $recursive);
-            $result = $recursive ? array_merge_recursive($result, $data) : array_merge($result, $data);
+            $data = $this->parse($data);
+            $result = array_merge($result, $data);
         }
 
         return $result;
@@ -73,7 +73,7 @@ class Arr extends LoaderAbstract
     /**
      * {@inheritdoc}
      */
-    protected function parse($data, $recursive)
+    protected function parse($data)
     {
         return $data;
     }

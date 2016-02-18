@@ -4,7 +4,6 @@ namespace Elixir\Config;
 
 use Elixir\Config\Cache\CacheableInterface;
 use Elixir\Config\ConfigInterface;
-use Elixir\Config\Loader\LoaderFactory;
 use Elixir\Config\Processor\ProcessorInterface;
 use Elixir\Config\Writer\WriterInterface;
 use Elixir\STDLib\ArrayUtils;
@@ -50,7 +49,6 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     public function setCacheStrategy(CacheableInterface $value)
     {
         $this->cache = $value;
-        $this->cache->setConfig($this);
     }
     
     /**
@@ -79,15 +77,6 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     
     /**
      * {@inheritdoc}
-     * @throws \LogicException
-     */
-    public function setConfig(ConfigInterface $value) 
-    {
-        throw new \LogicException('Needless to self inject.');
-    }
-    
-    /**
-     * {@inheritdoc}
      */
     public function loadCache()
     {
@@ -96,7 +85,14 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
             return false;
         }
         
-        return $this->cache->loadCache();
+        $data = $this->cache->loadCache();
+        
+        if ($data)
+        {
+            $this->merge($data);
+        }
+        
+        return $data;
     }
     
     /**
@@ -117,7 +113,10 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
      */
     public function load($config, array $options = [])
     {
-        $options['recursive'] = isset($options['recursive']) ? $options['recursive'] : false;
+        if ($this->cacheLoaded())
+        {
+            return;
+        }
         
         if ($config instanceof self)
         {
@@ -125,66 +124,21 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
         } 
         else 
         {
-            $data = [];
-            $options['environment'] = $this->environment;
-            
-            foreach ((array)$config as $conf) 
+            if (is_callable($config))
             {
-                if (is_callable($conf))
-                {
-                    $conf = call_user_func($conf);
-                }
+                $data = call_user_func_array($config, [$this]);
+            }
+            else
+            {
+                $options['environment'] = $this->environment;
                 
-                if (is_array($conf))
-                {
-                    $this->load($conf);
-                    continue;
-                }
-                
-                $d = null;
-                
-                if (null !== $this->cache && is_file($conf))
-                {
-                    $d = $this->cache->loadFromCache($conf, $options);
-                    
-                    if (true === $d)
-                    {
-                        continue;
-                    }
-                }
-                
-                if (!$d)
-                {
-                    $loader = LoaderFactory::create($conf, $options);
-                    $d = $loader->load($conf, $options['recursive']);
-                }
-                
-                $data = $options['recursive'] ? array_merge_recursive($data, $d) : array_merge($data, $d);
+                $loader = LoaderFactory::create($resource);
+                $data = $loader->load($resource, $options);
             }
             
-            $this->merge($data, $options['recursive']);
+            $this->merge($data);
             return $data;
         }
-    }
-    
-    /**
-     * {@inheritdoc}
-     * @throws \RuntimeException
-     */
-    public function loadFromCache($file, array $options = [])
-    {
-        if (null === $this->cache)
-        {
-            throw new \RuntimeException('Cache strategy is not defined');
-        }
-        
-        $options['environment'] = $this->environment;
-        $options['recursive'] = isset($options['recursive']) ? $options['recursive'] : false;
-        
-        $data = $this->cache->loadFromCache($file, $options);
-        $this->merge($data, $options['recursive']);
-        
-        return $data;
     }
     
     /**
@@ -343,16 +297,34 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     }
     
     /**
-     * {@inheritdoc}
+     * @return boolean
      */
-    public function exportToCache()
+    public function isFreshCache()
     {
         if (null === $this->cache)
         {
             return false;
         }
         
-        return $this->cache->exportToCache();
+        return $this->cache->isFreshCache();
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function exportToCache(array $data = null)
+    {
+        if (null === $this->cache)
+        {
+            return false;
+        }
+        
+        if ($data)
+        {
+            $this->merge($data);
+        }
+        
+        return $this->cache->exportToCache($this->all());
     }
     
     /**
@@ -365,20 +337,20 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
             return false;
         }
         
-        return $this->cache->exportToCache();
+        return $this->cache->invalidateCache();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function merge($data, $recursive = false) 
+    public function merge($data) 
     {
         if ($data instanceof self) 
         {
             $data = $data->all();
         }
 
-        $this->data = $recursive ? array_merge_recursive($this->data, $data) : array_merge($this->data, $data);
+        $this->data = array_merge($this->data, $data);
     }
     
     /**

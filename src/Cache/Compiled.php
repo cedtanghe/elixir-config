@@ -3,7 +3,6 @@
 namespace Elixir\Config\Cache;
 
 use Elixir\Config\Cache\CacheableInterface;
-use Elixir\Config\ConfigInterface;
 use Elixir\Config\Loader\LoaderFactory;
 use Elixir\Config\Writer\WriterFactory;
 use Elixir\Config\Writer\WriterInterface;
@@ -31,7 +30,7 @@ class Compiled implements CacheableInterface
     /**
      * @var boolean 
      */
-    protected $build = false;
+    protected $build = true;
     
     /**
      * @var boolean 
@@ -42,11 +41,6 @@ class Compiled implements CacheableInterface
      * @var WriterInterface 
      */
     protected $writer;
-    
-    /**
-     * @var ConfigInterface
-     */
-    protected $config;
 
     /**
      * @var array 
@@ -58,7 +52,7 @@ class Compiled implements CacheableInterface
      * @param string $file
      * @param string|numeric|null $cacheVersion
      */
-    public function __construct($path = null, $file = 'cache.php', $cacheVersion = null) 
+    public function __construct($path = null, $file = 'config.cache', $cacheVersion = null) 
     {
         $path = $path ? : 'application' . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
         
@@ -89,14 +83,6 @@ class Compiled implements CacheableInterface
     }
     
     /**
-     * {@inheritdoc}
-     */
-    public function setConfig(ConfigInterface $value)
-    {
-        $this->config = $value;
-    }
-    
-    /**
      * @param WriterInterface $value
      */
     public function setWriter(WriterInterface $value)
@@ -117,9 +103,9 @@ class Compiled implements CacheableInterface
      */
     public function loadCache()
     {
-        if ($this->loaded)
+        if ($this->cacheLoaded())
         {
-            return $this->cacheLoaded();
+            return false;
         }
         
         $this->loaded = true;
@@ -137,8 +123,7 @@ class Compiled implements CacheableInterface
                 return false;
             }
             
-            $this->config->merge($this->cachedata);
-            return true;
+            return $this->cachedata;
         } 
         else
         {
@@ -152,32 +137,22 @@ class Compiled implements CacheableInterface
      */
     public function cacheLoaded()
     {
-        if (!$this->loaded)
-        {
-            $this->loadCache();
-        }
-        
-        return null !== $this->cachedata;
+        return $this->loaded;
     }
     
     /**
      * {@inheritdoc}
      */
-    public function loadFromCache($file, array $options = []) 
+    public function isFreshCache()
     {
-        return $this->cacheLoaded();
+        return !$this->build;
     }
     
     /**
      * {@inheritdoc}
      */
-    public function exportToCache() 
+    public function exportToCache(array $data = null) 
     {
-        if ($this->cachedata && count(array_diff_key($this->config->all(), $this->cachedata)) > 0)
-        {
-            $this->build = true;
-        }
-        
         if ($this->build)
         {
             $this->build = false;
@@ -187,7 +162,7 @@ class Compiled implements CacheableInterface
                 $this->writer = WriterFactory::create($this->getCacheFile());
             }
             
-            $writed = $this->writer->export(['_version' => $this->cacheVersion] + $this->config->all(), $this->getCacheFile());
+            $writed = $this->writer->export(['_version' => $this->cacheVersion] + $data, $this->getCacheFile());
             return $writed;
         }
         
@@ -200,7 +175,8 @@ class Compiled implements CacheableInterface
     public function invalidateCache()
     {
         $this->cachedata = null;
-        $this->build = false;
+        $this->loaded = false;
+        $this->build = true;
         
         if (file_exists($this->getCacheFile()))
         {

@@ -2,20 +2,13 @@
 
 namespace Elixir\Config\Cache;
 
-use Elixir\Config\ConfigInterface;
-
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
 interface CacheableInterface 
 {
     /**
-     * @param ConfigInterface $value
-     */
-    public function setConfig(ConfigInterface $value);
-    
-    /**
-     * @return boolean
+     * @return array
      */
     public function loadCache();
     
@@ -25,15 +18,15 @@ interface CacheableInterface
     public function cacheLoaded();
     
     /**
-     * @param string $file
-     * @return array
-     */
-    public function loadFromCache($file, array $options = []);
-    
-    /**
      * @return boolean
      */
-    public function exportToCache();
+    public function isFreshCache();
+    
+    /**
+     * @param array $data
+     * @return boolean
+     */
+    public function exportToCache(array $data = null);
     
     /**
      * @return boolean
