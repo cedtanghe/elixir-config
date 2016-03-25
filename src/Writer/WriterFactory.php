@@ -4,6 +4,7 @@ namespace Elixir\Config\Writer;
 
 use Elixir\Config\Writer\Arr;
 use Elixir\Config\Writer\JSON;
+use Elixir\Config\Writer\Serialize;
 use Elixir\Config\Writer\WriterInterface;
 use Elixir\Config\Writer\YAML;
 
@@ -57,6 +58,19 @@ class WriterFactory
                 if (strstr($file, '.yml'))
                 {
                     return new YAML();
+                }
+                
+                return null;
+            };
+        }
+        
+        if (!isset(static::$factories['Serialize']))
+        {
+            static::$factories['Serialize'] = function($file)
+            {
+                if (strstr($file, '.cache'))
+                {
+                    return new Serialize();
                 }
                 
                 return null;

@@ -105,7 +105,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
             return false;
         }
         
-        return null !== $this->cache->cacheLoaded();
+        return $this->cache->cacheLoaded();
     }
     
     /**
@@ -120,7 +120,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
         
         if ($config instanceof self)
         {
-            $data = $config->all();
+            $this->merge($config);
         } 
         else 
         {
@@ -132,12 +132,11 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
             {
                 $options['environment'] = $this->environment;
                 
-                $loader = LoaderFactory::create($resource);
-                $data = $loader->load($resource, $options);
+                $loader = LoaderFactory::create($config, $options);
+                $data = $loader->load($config);
             }
             
             $this->merge($data);
-            return $data;
         }
     }
     
