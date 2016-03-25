@@ -7,14 +7,14 @@ use Elixir\Config\Writer\WriterInterface;
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class JSON implements WriterInterface
+class ArrayWritter implements WriterInterface
 {
     /**
      * {@inheritdoc}
      */
     public function write(array $data) 
     {
-        return json_encode($data, JSON_PRETTY_PRINT);
+        return $data;
     }
 
     /**
@@ -22,12 +22,12 @@ class JSON implements WriterInterface
      */
     public function export(array $data, $file)
     {
-        if (!strstr($file, '.json'))
+        if (!strstr($file, '.php'))
         {
-            $file .= '.json';
+            $file .= '.php';
         }
         
-        file_put_contents($file, $this->write($data));
+        file_put_contents($file, '<?php return ' . var_export($this->write($data), true) . ';');
         return file_exists($file);
     }
 }

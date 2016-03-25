@@ -4,14 +4,17 @@ namespace Elixir\Config\Cache;
 
 use Elixir\Config\Cache\CacheableInterface;
 use Elixir\Config\Loader\LoaderFactory;
+use Elixir\Config\Loader\LoaderFactoryAwareTrait;
 use Elixir\Config\Writer\WriterFactory;
-use Elixir\Config\Writer\WriterInterface;
 
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class Compiled implements CacheableInterface 
+class Compiled implements CacheableInterface
 {
+    use LoaderFactoryAwareTrait;
+    use WriterFactoryAwareTrait;
+    
     /**
      * @var string|numeric|null
      */
@@ -36,12 +39,7 @@ class Compiled implements CacheableInterface
      * @var boolean 
      */
     protected $loaded = false;
-
-    /**
-     * @var WriterInterface 
-     */
-    protected $writer;
-
+    
     /**
      * @var array 
      */
@@ -83,22 +81,6 @@ class Compiled implements CacheableInterface
     }
     
     /**
-     * @param WriterInterface $value
-     */
-    public function setWriter(WriterInterface $value)
-    {
-        $this->writer = $value;
-    }
-    
-    /**
-     * @return WriterInterface
-     */
-    public function getWriter()
-    {
-        return $this->writer;
-    }
-    
-    /**
      * {@inheritdoc}
      */
     public function loadCache()
@@ -112,7 +94,13 @@ class Compiled implements CacheableInterface
         
         if (file_exists($this->getCacheFile()))
         {
-            $loader = LoaderFactory::create($this->getCacheFile());
+            if (null === $this->loaderFactory)
+            {
+                $this->loaderFactory = new LoaderFactory();
+                LoaderFactory::addDefaultLoaders($this->loaderFactory);
+            }
+            
+            $loader = $this->loaderFactory->create($this->getCacheFile());
             $this->cachedata = $loader->load($this->getCacheFile());
             
             if (isset($this->cachedata['_version']) && $this->cachedata['_version'] !== $this->cacheVersion)
@@ -157,12 +145,15 @@ class Compiled implements CacheableInterface
         {
             $this->build = false;
             
-            if (null === $this->writer)
+            if (null === $this->writerFactory)
             {
-                $this->writer = WriterFactory::create($this->getCacheFile());
+                $this->writerFactory = new WriterFactory();
+                WriterFactory::addDefaultWriters($this->writerFactory);
             }
             
-            $writed = $this->writer->export(['_version' => $this->cacheVersion] + $data, $this->getCacheFile());
+            $writer = $this->writerFactory->create($this->getCacheFile());
+            $writed = $writer->export(['_version' => $this->cacheVersion] + $data, $this->getCacheFile());
+            
             return $writed;
         }
         

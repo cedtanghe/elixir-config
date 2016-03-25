@@ -2,13 +2,16 @@
 
 namespace Elixir\Config\Loader;
 
-use Elixir\Config\Loader\LoaderAbstract;
+use Elixir\Config\Loader\EnvironmentTrait;
+use Elixir\Config\Loader\LoaderInterface;
 
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class Arr extends LoaderAbstract 
+class ArrayLoader implements LoaderInterface
 {
+    use EnvironmentTrait;
+    
     /**
      * {@inheritdoc}
      */

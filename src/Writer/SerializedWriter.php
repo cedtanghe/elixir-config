@@ -7,14 +7,14 @@ use Elixir\Config\Writer\WriterInterface;
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class Arr implements WriterInterface
+class SerializedWriter implements WriterInterface
 {
     /**
      * {@inheritdoc}
      */
     public function write(array $data) 
     {
-        return $data;
+        return serialize($data);
     }
 
     /**
@@ -22,12 +22,12 @@ class Arr implements WriterInterface
      */
     public function export(array $data, $file)
     {
-        if (!strstr($file, '.php'))
+        if (!strstr($file, '.cache'))
         {
-            $file .= '.php';
+            $file .= '.cache';
         }
         
-        file_put_contents($file, '<?php return ' . var_export($this->write($data), true) . ';');
+        file_put_contents($file, $this->write($data));
         return file_exists($file);
     }
 }

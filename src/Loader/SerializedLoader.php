@@ -2,12 +2,12 @@
 
 namespace Elixir\Config\Loader;
 
-use Elixir\Config\Loader\Arr;
+use Elixir\Config\Loader\ArrayLoader;
 
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class Serialize extends Arr 
+class SerializedLoader extends ArrayLoader 
 {
     /**
      * {@inheritdoc}

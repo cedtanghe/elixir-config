@@ -7,14 +7,14 @@ use Elixir\Config\Writer\WriterInterface;
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class Serialize implements WriterInterface
+class JSONWriter implements WriterInterface
 {
     /**
      * {@inheritdoc}
      */
     public function write(array $data) 
     {
-        return serialize($data);
+        return json_encode($data, JSON_PRETTY_PRINT);
     }
 
     /**
@@ -22,9 +22,9 @@ class Serialize implements WriterInterface
      */
     public function export(array $data, $file)
     {
-        if (!strstr($file, '.cache'))
+        if (!strstr($file, '.json'))
         {
-            $file .= '.cache';
+            $file .= '.json';
         }
         
         file_put_contents($file, $this->write($data));

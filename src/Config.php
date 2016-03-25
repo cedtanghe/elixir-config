@@ -4,6 +4,8 @@ namespace Elixir\Config;
 
 use Elixir\Config\Cache\CacheableInterface;
 use Elixir\Config\ConfigInterface;
+use Elixir\Config\Loader\LoaderFactory;
+use Elixir\Config\Loader\LoaderFactoryAwareTrait;
 use Elixir\Config\Processor\ProcessorInterface;
 use Elixir\Config\Writer\WriterInterface;
 use Elixir\STDLib\ArrayUtils;
@@ -13,6 +15,8 @@ use Elixir\STDLib\ArrayUtils;
  */
 class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countable
 {
+    use LoaderFactoryAwareTrait;
+    
     /**
      * @var string 
      */
@@ -132,7 +136,13 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
             {
                 $options['environment'] = $this->environment;
                 
-                $loader = LoaderFactory::create($config, $options);
+                if (null === $this->loaderFactory)
+                {
+                    $this->loaderFactory = new LoaderFactory();
+                    LoaderFactory::addDefaultLoaders($this->loaderFactory);
+                }
+                
+                $loader = $this->loaderFactory->create($config, $options);
                 $data = $loader->load($config);
             }
             

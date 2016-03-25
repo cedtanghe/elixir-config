@@ -7,7 +7,7 @@ use Elixir\Config\Writer\WriterInterface;
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class YAML implements WriterInterface
+class YAMLWriter implements WriterInterface
 {
     /**
      * @var callable 

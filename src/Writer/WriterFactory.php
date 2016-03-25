@@ -2,11 +2,11 @@
 
 namespace Elixir\Config\Writer;
 
-use Elixir\Config\Writer\Arr;
-use Elixir\Config\Writer\JSON;
-use Elixir\Config\Writer\Serialize;
+use Elixir\Config\Writer\ArrayWriter;
+use Elixir\Config\Writer\JSONWriter;
+use Elixir\Config\Writer\SerializedWriter;
 use Elixir\Config\Writer\WriterInterface;
-use Elixir\Config\Writer\YAML;
+use Elixir\Config\Writer\YAMLWriter;
 
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
@@ -14,72 +14,85 @@ use Elixir\Config\Writer\YAML;
 class WriterFactory 
 {
     /**
+     * @param WriterFactory $factory
+     */
+    public static function addDefaultWriters(self $factory)
+    {
+        $factory->add('array', function($file, $options)
+        {
+            if (strstr($file, '.php'))
+            {
+                return new ArrayWriter();
+            }
+            
+            return null;
+        });
+        
+        $factory->add('JSON', function($file, $options)
+        {
+            if (strstr($file, '.json'))
+            {
+                return new JSONWriter();
+            }
+
+            return null;
+        });
+        
+        $factory->add('YAML', function($file, $options)
+        {
+            if (strstr($file, '.yml'))
+            {
+                return new YAMLWriter();
+            }
+
+            return null;
+        });
+        
+        $factory->add('serialized', function($file, $options)
+        {
+            if (strstr($file, '.cache'))
+            {
+                return new SerializedWriter();
+            }
+            
+            return null;
+        });
+    }
+    
+    /**
      * @var array 
      */
-    public static $factories = [];
+    protected $factories = [];
+    
+    /**
+     * @param string $key
+     * @return boolean
+     */
+    public function has($key)
+    {
+        return isset($this->factories[$key]);
+    }
+
+    /**
+     * @param string $key
+     * @param callable $resolver
+     */
+    public function add($key, callable $resolver)
+    {
+        $this->factories[$key] = $resolver;
+    }
 
     /**
      * @param string $file
+     * @param array $options
      * @return WriterInterface
      * @throws \InvalidArgumentException
      */
-    public static function create($file) 
+    public function create($file, array $options = []) 
     {
-        if (!isset(static::$factories['Arr']))
+        foreach(static::$factories as $loader)
         {
-            static::$factories['Arr'] = function($file)
-            {
-                if (strstr($file, '.php'))
-                {
-                    return new Arr();
-                }
-                
-                return null;
-            };
-        }
-        
-        if (!isset(static::$factories['JSON']))
-        {
-            static::$factories['JSON'] = function($file)
-            {
-                if (strstr($file, '.json'))
-                {
-                    return new JSON();
-                }
-                
-                return null;
-            };
-        }
-        
-        if (!isset(static::$factories['YAML']))
-        {
-            static::$factories['YAML'] = function($file)
-            {
-                if (strstr($file, '.yml'))
-                {
-                    return new YAML();
-                }
-                
-                return null;
-            };
-        }
-        
-        if (!isset(static::$factories['Serialize']))
-        {
-            static::$factories['Serialize'] = function($file)
-            {
-                if (strstr($file, '.cache'))
-                {
-                    return new Serialize();
-                }
-                
-                return null;
-            };
-        }
-        
-        foreach(static::$factories as $writer)
-        {
-            $result = $writer($file);
+            $result = $loader($file, $options);
             
             if (null !== $result)
             {

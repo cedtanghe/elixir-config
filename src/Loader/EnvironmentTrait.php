@@ -2,9 +2,7 @@
 
 namespace Elixir\Config\Loader;
 
-use Elixir\Config\Loader\LoaderInterface;
-
-abstract class LoaderAbstract implements LoaderInterface
+trait EnvironmentTrait
 {
     /**
      * @var string 
@@ -25,7 +23,7 @@ abstract class LoaderAbstract implements LoaderInterface
         $this->environment = $environment;
         $this->strict = $strict;
     }
-
+    
     /**
      * @return string
      */
