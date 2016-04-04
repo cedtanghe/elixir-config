@@ -51,7 +51,7 @@ class YAMLWriter implements WriterInterface
     /**
      * {@inheritdoc}
      */
-    public function write(array $data) 
+    public function dump(array $data) 
     {
         return call_user_func($this->getYAMLEncoder(), $data);
     }
@@ -66,7 +66,7 @@ class YAMLWriter implements WriterInterface
             $file .= '.yml';
         }
         
-        file_put_contents($file, $this->write($data));
+        file_put_contents($file, $this->dump($data));
         return file_exists($file);
     }
 }

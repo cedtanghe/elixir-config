@@ -2,7 +2,6 @@
 
 namespace Elixir\Config\Loader;
 
-use Elixir\Config\Loader\EnvironmentTrait;
 use Elixir\Config\Loader\LoaderInterface;
 
 /**
@@ -10,7 +9,41 @@ use Elixir\Config\Loader\LoaderInterface;
  */
 class ArrayLoader implements LoaderInterface
 {
-    use EnvironmentTrait;
+    /**
+     * @var string 
+     */
+    protected $environment;
+
+    /**
+     * @var boolean 
+     */
+    protected $strict;
+
+    /**
+     * @param string $environment
+     * @param boolean $strict
+     */
+    public function __construct($environment = null, $strict = false)
+    {
+        $this->environment = $environment;
+        $this->strict = $strict;
+    }
+    
+    /**
+     * @return string
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isStrict() 
+    {
+        return $this->strict;
+    }
     
     /**
      * {@inheritdoc}
@@ -74,9 +107,10 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $data
+     * @return array
      */
-    protected function parse($data)
+    protected function parse(array $data)
     {
         return $data;
     }

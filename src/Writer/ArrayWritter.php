@@ -12,7 +12,7 @@ class ArrayWritter implements WriterInterface
     /**
      * {@inheritdoc}
      */
-    public function write(array $data) 
+    public function dump(array $data) 
     {
         return $data;
     }
@@ -27,7 +27,7 @@ class ArrayWritter implements WriterInterface
             $file .= '.php';
         }
         
-        file_put_contents($file, '<?php return ' . var_export($this->write($data), true) . ';');
+        file_put_contents($file, '<?php return ' . var_export($this->dump($data), true) . ';');
         return file_exists($file);
     }
 }

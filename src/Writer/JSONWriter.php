@@ -12,7 +12,7 @@ class JSONWriter implements WriterInterface
     /**
      * {@inheritdoc}
      */
-    public function write(array $data) 
+    public function dump(array $data) 
     {
         return json_encode($data, JSON_PRETTY_PRINT);
     }
@@ -27,7 +27,7 @@ class JSONWriter implements WriterInterface
             $file .= '.json';
         }
         
-        file_put_contents($file, $this->write($data));
+        file_put_contents($file, $this->dump($data));
         return file_exists($file);
     }
 }

@@ -16,7 +16,7 @@ class LoaderFactory
     /**
      * @param LoaderFactory $factory
      */
-    public static function addDefaultLoaders(self $factory)
+    public static function addLoaderProvider(self $factory)
     {
         $factory->add('array', function($config, $options)
         {

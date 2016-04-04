@@ -11,12 +11,12 @@ interface WriterInterface
      * @param array $data
      * @return mixed
      */
-    public function write(array $data);
+    public function dump(array $data);
 
     /**
      * @param array $data
      * @param string $file
      * @return boolean
      */
-    public function export(array $data, $file);
+    public function write(array $data, $file);
 }

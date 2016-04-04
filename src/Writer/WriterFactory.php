@@ -16,7 +16,7 @@ class WriterFactory
     /**
      * @param WriterFactory $factory
      */
-    public static function addDefaultWriters(self $factory)
+    public static function addWriterProvider(self $factory)
     {
         $factory->add('array', function($file, $options)
         {
