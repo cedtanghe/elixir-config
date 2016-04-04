@@ -117,7 +117,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
      */
     public function load($config, array $options = [])
     {
-        if ($this->cacheLoaded())
+        if ($this->cacheLoaded() && $this->isFreshCache())
         {
             return;
         }
@@ -306,7 +306,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     }
     
     /**
-     * @return boolean
+     * {@inheritdoc}
      */
     public function isFreshCache()
     {
