@@ -16,7 +16,7 @@ class LoaderFactory
     /**
      * @param LoaderFactory $factory
      */
-    public static function addLoaderProvider(self $factory)
+    public static function addProvider(self $factory)
     {
         $factory->add('array', function($config, $options)
         {
@@ -102,7 +102,7 @@ class LoaderFactory
      */
     public function create($config, array $options = []) 
     {
-        foreach(static::$factories as $loader)
+        foreach($this->factories as $loader)
         {
             $result = $loader($config, $options);
             

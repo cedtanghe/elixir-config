@@ -139,7 +139,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
                 if (null === $this->loaderFactory)
                 {
                     $this->loaderFactory = new LoaderFactory();
-                    LoaderFactory::addLoaderProvider($this->loaderFactory);
+                    LoaderFactory::addProvider($this->loaderFactory);
                 }
                 
                 $loader = $this->loaderFactory->create($config, $options);

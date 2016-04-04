@@ -8,6 +8,11 @@ namespace Elixir\Config\Loader;
 interface LoaderInterface 
 {
     /**
+     * @var string
+     */
+    const RESOURCES = '@resources';
+    
+    /**
      * @param mixed $config
      * @return array
      */

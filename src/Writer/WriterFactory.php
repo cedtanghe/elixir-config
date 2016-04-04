@@ -16,7 +16,7 @@ class WriterFactory
     /**
      * @param WriterFactory $factory
      */
-    public static function addWriterProvider(self $factory)
+    public static function addProvider(self $factory)
     {
         $factory->add('array', function($file, $options)
         {
@@ -90,7 +90,7 @@ class WriterFactory
      */
     public function create($file, array $options = []) 
     {
-        foreach(static::$factories as $loader)
+        foreach($this->$factories as $loader)
         {
             $result = $loader($file, $options);
             

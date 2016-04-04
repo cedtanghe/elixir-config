@@ -97,7 +97,7 @@ class Compiled implements CacheableInterface
             if (null === $this->loaderFactory)
             {
                 $this->loaderFactory = new LoaderFactory();
-                LoaderFactory::addLoaderProvider($this->loaderFactory);
+                LoaderFactory::addProvider($this->loaderFactory);
             }
             
             $loader = $this->loaderFactory->create($this->getCacheFile());
@@ -148,7 +148,7 @@ class Compiled implements CacheableInterface
             if (null === $this->writerFactory)
             {
                 $this->writerFactory = new WriterFactory();
-                WriterFactory::addWriterProvider($this->writerFactory);
+                WriterFactory::addProvider($this->writerFactory);
             }
             
             $writer = $this->writerFactory->create($this->getCacheFile());

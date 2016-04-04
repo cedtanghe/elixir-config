@@ -112,6 +112,19 @@ class ArrayLoader implements LoaderInterface
      */
     protected function parse(array $data)
     {
+        if (isset($data[LoaderInterface::RESOURCES]))
+        {
+            // Todo
+        }
+        
+        foreach ($data as $key => &$value)
+        {
+            if (is_array($value))
+            {
+                $value = $this->parse($value);
+            }
+        }
+        
         return $data;
     }
 }

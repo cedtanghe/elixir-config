@@ -18,5 +18,5 @@ interface WriterInterface
      * @param string $file
      * @return boolean
      */
-    public function write(array $data, $file);
+    public function export(array $data, $file);
 }
