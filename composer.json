@@ -10,17 +10,9 @@
     ],
     "homepage": "https://github.com/cedtanghe/elixir-config",
     "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/cedtanghe/elixir-stdlib"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/cedtanghe/elixir-filter"
-        }
     ],
     "require": {
-        "php": ">=5.4",
+        "php": ">=5.6",
         "elixir/elixir-stdlib": "*"
     },
     "require-dev": {

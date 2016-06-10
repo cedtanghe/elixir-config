@@ -8,7 +8,10 @@ use Elixir\Config\Loader\LoaderFactory;
 use Elixir\Config\Loader\LoaderFactoryAwareTrait;
 use Elixir\Config\Processor\ProcessorInterface;
 use Elixir\Config\Writer\WriterInterface;
-use Elixir\STDLib\ArrayUtils;
+use function Elixir\STDLib\array_get;
+use function Elixir\STDLib\array_has;
+use function Elixir\STDLib\array_remove;
+use function Elixir\STDLib\array_set;
 
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
@@ -163,7 +166,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
      */
     public function has($key)
     {
-        return ArrayUtils::has($key, $this->data);
+        return array_has($key, $this->data);
     }
 
     /**
@@ -171,7 +174,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
      */
     public function get($key, $default = null) 
     {
-        $data = ArrayUtils::get($key, $this->data, $default);
+        $data = array_get($key, $this->data, $default);
         
         if (null !== $this->processor)
         {
@@ -186,7 +189,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
      */
     public function set($key, $value) 
     {
-        ArrayUtils::set($key, $value, $this->data);
+        array_set($key, $value, $this->data);
     }
 
     /**
@@ -194,7 +197,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
      */
     public function remove($key) 
     {
-        ArrayUtils::remove($key, $this->data);
+        array_remove($key, $this->data);
     }
 
     /**
