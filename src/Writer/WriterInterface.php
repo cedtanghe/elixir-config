@@ -9,14 +9,16 @@ interface WriterInterface
 {
     /**
      * @param array $data
+     *
      * @return mixed
      */
     public function dump(array $data);
 
     /**
-     * @param array $data
+     * @param array  $data
      * @param string $file
-     * @return boolean
+     *
+     * @return bool
      */
     public function export(array $data, $file);
 }

@@ -2,8 +2,6 @@
 
 namespace Elixir\Config\Writer;
 
-use Elixir\Config\Writer\WriterInterface;
-
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
@@ -12,7 +10,7 @@ class JSONWriter implements WriterInterface
     /**
      * {@inheritdoc}
      */
-    public function dump(array $data) 
+    public function dump(array $data)
     {
         return json_encode($data, JSON_PRETTY_PRINT);
     }
@@ -22,12 +20,12 @@ class JSONWriter implements WriterInterface
      */
     public function export(array $data, $file)
     {
-        if (!strstr($file, '.json'))
-        {
+        if (!strstr($file, '.json')) {
             $file .= '.json';
         }
-        
+
         file_put_contents($file, $this->dump($data));
+
         return file_exists($file);
     }
 }

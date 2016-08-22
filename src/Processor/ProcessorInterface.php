@@ -5,11 +5,11 @@ namespace Elixir\Config\Processor;
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-
-interface ProcessorInterface 
+interface ProcessorInterface
 {
     /**
      * @param mixed $value
+     *
      * @return mixed
      */
     public function process($value);

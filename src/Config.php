@@ -3,7 +3,6 @@
 namespace Elixir\Config;
 
 use Elixir\Config\Cache\CacheableInterface;
-use Elixir\Config\ConfigInterface;
 use Elixir\Config\Loader\LoaderFactory;
 use Elixir\Config\Loader\LoaderFactoryAwareTrait;
 use Elixir\Config\Processor\ProcessorInterface;
@@ -19,37 +18,37 @@ use function Elixir\STDLib\array_set;
 class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countable
 {
     use LoaderFactoryAwareTrait;
-    
+
     /**
-     * @var string 
+     * @var string
      */
     protected $environment;
-    
+
     /**
-     * @var CacheableInterface 
+     * @var CacheableInterface
      */
     protected $cache;
-    
+
     /**
-     * @var ProcessorInterface 
+     * @var ProcessorInterface
      */
     protected $processor;
 
     /**
-     * @var array 
+     * @var array
      */
     protected $data = [];
-    
+
     /**
      * @param string $environment
-     * @param array $data
+     * @param array  $data
      */
-    public function __construct($environment = null, array $data = []) 
+    public function __construct($environment = null, array $data = [])
     {
         $this->environment = $environment;
         $this->data = $data;
     }
-    
+
     /**
      * @param CacheableInterface $value
      */
@@ -57,7 +56,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     {
         $this->cache = $value;
     }
-    
+
     /**
      * @return CacheableInterface
      */
@@ -65,7 +64,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     {
         return $this->cache;
     }
-    
+
     /**
      * @param ProcessorInterface $value
      */
@@ -73,7 +72,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     {
         $this->processor = $value;
     }
-    
+
     /**
      * @return ProcessorInterface
      */
@@ -81,78 +80,67 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     {
         return $this->processor;
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function loadCache()
     {
-        if (null === $this->cache)
-        {
+        if (null === $this->cache) {
             return false;
         }
-        
+
         $data = $this->cache->loadCache();
-        
-        if ($data)
-        {
+
+        if ($data) {
             $this->merge($data);
         }
-        
+
         return $data;
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function cacheLoaded()
     {
-        if (null === $this->cache)
-        {
+        if (null === $this->cache) {
             return false;
         }
-        
+
         return $this->cache->cacheLoaded();
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function load($config, array $options = [])
     {
-        if ($this->cacheLoaded() && $this->isFreshCache())
-        {
+        if ($this->cacheLoaded() && $this->isFreshCache()) {
             return;
         }
-        
-        if ($config instanceof self)
-        {
+
+        if ($config instanceof self) {
             $this->merge($config);
-        } 
-        else 
-        {
-            if (is_callable($config))
-            {
+        } else {
+            if (is_callable($config)) {
                 $data = call_user_func_array($config, [$this]);
-            }
-            else
-            {
+            } else {
                 $options['environment'] = $this->environment;
-                
-                if (null === $this->loaderFactory)
-                {
+
+                if (null === $this->loaderFactory) {
                     $this->loaderFactory = new LoaderFactory();
                     LoaderFactory::addProvider($this->loaderFactory);
                 }
-                
+
                 $loader = $this->loaderFactory->create($config, $options);
                 $data = $loader->load($config);
             }
-            
+
             $this->merge($data);
         }
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -160,7 +148,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     {
         return $writer->export($this->all(), $file);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -172,22 +160,21 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     /**
      * {@inheritdoc}
      */
-    public function get($key, $default = null) 
+    public function get($key, $default = null)
     {
         $data = array_get($key, $this->data, $default);
-        
-        if (null !== $this->processor)
-        {
+
+        if (null !== $this->processor) {
             $data = $this->processor->process($data);
         }
-        
+
         return $data;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value) 
+    public function set($key, $value)
     {
         array_set($key, $value, $this->data);
     }
@@ -195,7 +182,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     /**
      * {@inheritdoc}
      */
-    public function remove($key) 
+    public function remove($key)
     {
         array_remove($key, $this->data);
     }
@@ -203,22 +190,21 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     /**
      * {@inheritdoc}
      */
-    public function all() 
+    public function all()
     {
         $data = $this->data;
-        
-        if (null !== $this->processor)
-        {
+
+        if (null !== $this->processor) {
             $data = $this->processor->process($data);
         }
-        
+
         return $data;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function replace(array $data) 
+    public function replace(array $data)
     {
         $this->data = $data;
     }
@@ -234,10 +220,9 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     /**
      * @ignore
      */
-    public function offsetSet($key, $value) 
+    public function offsetSet($key, $value)
     {
-        if (null === $key)
-        {
+        if (null === $key) {
             throw new \InvalidArgumentException('The key can not be undefined.');
         }
 
@@ -247,7 +232,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     /**
      * @ignore
      */
-    public function offsetGet($key) 
+    public function offsetGet($key)
     {
         return $this->get($key);
     }
@@ -263,7 +248,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     /**
      * @ignore
      */
-    public function rewind() 
+    public function rewind()
     {
         return reset($this->data);
     }
@@ -271,7 +256,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     /**
      * @ignore
      */
-    public function current() 
+    public function current()
     {
         return $this->get($this->key());
     }
@@ -279,7 +264,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     /**
      * @ignore
      */
-    public function key() 
+    public function key()
     {
         return key($this->data);
     }
@@ -295,7 +280,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     /**
      * @ignore
      */
-    public function valid() 
+    public function valid()
     {
         return null !== $this->key();
     }
@@ -307,64 +292,59 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     {
         return count($this->data);
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function isFreshCache()
     {
-        if (null === $this->cache)
-        {
+        if (null === $this->cache) {
             return false;
         }
-        
+
         return $this->cache->isFreshCache();
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function exportToCache(array $data = null)
     {
-        if (null === $this->cache)
-        {
+        if (null === $this->cache) {
             return false;
         }
-        
-        if ($data)
-        {
+
+        if ($data) {
             $this->merge($data);
         }
-        
+
         return $this->cache->exportToCache($this->all());
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function invalidateCache()
     {
-        if (null === $this->cache)
-        {
+        if (null === $this->cache) {
             return false;
         }
-        
+
         return $this->cache->invalidateCache();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function merge($data) 
+    public function merge($data)
     {
-        if ($data instanceof self) 
-        {
+        if ($data instanceof self) {
             $data = $data->all();
         }
 
         $this->data = array_merge($this->data, $data);
     }
-    
+
     /**
      * @ignore
      */
@@ -372,7 +352,7 @@ class Config implements ConfigInterface, CacheableInterface, \Iterator, \Countab
     {
         return [
             'environment' => $this->environment,
-            'data' => $this->data
+            'data' => $this->data,
         ];
     }
 }

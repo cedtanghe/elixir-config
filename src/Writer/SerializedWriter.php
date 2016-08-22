@@ -2,8 +2,6 @@
 
 namespace Elixir\Config\Writer;
 
-use Elixir\Config\Writer\WriterInterface;
-
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
@@ -12,7 +10,7 @@ class SerializedWriter implements WriterInterface
     /**
      * {@inheritdoc}
      */
-    public function dump(array $data) 
+    public function dump(array $data)
     {
         return serialize($data);
     }
@@ -22,12 +20,12 @@ class SerializedWriter implements WriterInterface
      */
     public function export(array $data, $file)
     {
-        if (!strstr($file, '.cache'))
-        {
+        if (!strstr($file, '.cache')) {
             $file .= '.cache';
         }
-        
+
         file_put_contents($file, $this->dump($data));
+
         return file_exists($file);
     }
 }

@@ -2,33 +2,31 @@
 
 namespace Elixir\Config\Loader;
 
-use Elixir\Config\Loader\LoaderInterface;
-
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
 class ArrayLoader implements LoaderInterface
 {
     /**
-     * @var string 
+     * @var string
      */
     protected $environment;
 
     /**
-     * @var boolean 
+     * @var bool
      */
     protected $strict;
 
     /**
      * @param string $environment
-     * @param boolean $strict
+     * @param bool   $strict
      */
     public function __construct($environment = null, $strict = false)
     {
         $this->environment = $environment;
         $this->strict = $strict;
     }
-    
+
     /**
      * @return string
      */
@@ -38,20 +36,19 @@ class ArrayLoader implements LoaderInterface
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
-    public function isStrict() 
+    public function isStrict()
     {
         return $this->strict;
     }
-    
+
     /**
      * {@inheritdoc}
      */
-    public function load($config) 
+    public function load($config)
     {
-        if (!is_array($config)) 
-        {
+        if (!is_array($config)) {
             $config = include $config;
         }
 
@@ -60,23 +57,18 @@ class ArrayLoader implements LoaderInterface
 
         $m = $this->environment;
 
-        if (null !== $m) 
-        {
+        if (null !== $m) {
             $found = false;
 
-            do 
-            {
-                foreach ($config as $key => $value)
-                {
+            do {
+                foreach ($config as $key => $value) {
                     $k = explode('>', $key);
 
-                    if (trim($k[0]) === $m) 
-                    {
+                    if (trim($k[0]) === $m) {
                         $found = true;
                         $supers[] = $value;
 
-                        if (isset($k[1])) 
-                        {
+                        if (isset($k[1])) {
                             $m = trim($k[1]);
                             continue 2;
                         }
@@ -84,21 +76,16 @@ class ArrayLoader implements LoaderInterface
                 }
 
                 $m = null;
-            } 
-            while (null !== $m);
+            } while (null !== $m);
 
-            if (!$found && !$this->strict) 
-            {
+            if (!$found && !$this->strict) {
                 $supers[] = $config;
             }
-        } 
-        else 
-        {
+        } else {
             $supers[] = $config;
         }
 
-        foreach (array_reverse($supers) as $data)
-        {
+        foreach (array_reverse($supers) as $data) {
             $data = $this->parse($data);
             $result = array_merge($result, $data);
         }
@@ -108,23 +95,21 @@ class ArrayLoader implements LoaderInterface
 
     /**
      * @param array $data
+     *
      * @return array
      */
     protected function parse(array $data)
     {
-        if (isset($data[LoaderInterface::RESOURCES]))
-        {
+        if (isset($data[LoaderInterface::RESOURCES])) {
             // Todo
         }
-        
-        foreach ($data as $key => &$value)
-        {
-            if (is_array($value))
-            {
+
+        foreach ($data as $key => &$value) {
+            if (is_array($value)) {
                 $value = $this->parse($value);
             }
         }
-        
+
         return $data;
     }
 }

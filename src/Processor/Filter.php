@@ -2,7 +2,6 @@
 
 namespace Elixir\Config\Processor;
 
-use Elixir\Config\Processor\ProcessorInterface;
 use Elixir\Filter\FilterInterface;
 
 /**
@@ -11,20 +10,20 @@ use Elixir\Filter\FilterInterface;
 class Filter implements ProcessorInterface
 {
     /**
-     * @var FilterInterface 
+     * @var FilterInterface
      */
     protected $filter;
 
     /**
-     * @var array 
+     * @var array
      */
     protected $options = [];
 
     /**
      * @param FilterInterface $filter
-     * @param array $options
+     * @param array           $options
      */
-    public function __construct(FilterInterface $filter, array $options = []) 
+    public function __construct(FilterInterface $filter, array $options = [])
     {
         $this->filter = $filter;
         $this->options = $options;
@@ -35,15 +34,11 @@ class Filter implements ProcessorInterface
      */
     public function process($value)
     {
-        if (is_array($value) || is_object($value) || $value instanceof \Traversable) 
-        {
-            foreach ($value as &$value) 
-            {
+        if (is_array($value) || is_object($value) || $value instanceof \Traversable) {
+            foreach ($value as &$value) {
                 $value = $this->process($value);
             }
-        } 
-        else 
-        {
+        } else {
             $value = $this->filter->filter($value, $this->options);
         }
 

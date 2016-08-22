@@ -8,10 +8,10 @@ namespace Elixir\Config\Writer;
 trait WriterrFactoryAwareTrait
 {
     /**
-     * @var WriterFactory 
+     * @var WriterFactory
      */
     protected $writerFactory;
-    
+
     /**
      * @param WriterFactory $value
      */
@@ -19,7 +19,7 @@ trait WriterrFactoryAwareTrait
     {
         $this->writerFactory = $value;
     }
-    
+
     /**
      * @return WriterFactory
      */

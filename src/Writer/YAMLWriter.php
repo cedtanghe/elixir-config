@@ -2,15 +2,13 @@
 
 namespace Elixir\Config\Writer;
 
-use Elixir\Config\Writer\WriterInterface;
-
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
 class YAMLWriter implements WriterInterface
 {
     /**
-     * @var callable 
+     * @var callable
      */
     protected $YAMLEncoder;
 
@@ -19,19 +17,15 @@ class YAMLWriter implements WriterInterface
      */
     public function __construct(callable $YAMLEncoder = null)
     {
-        if (null !== $YAMLEncoder)
-        {
+        if (null !== $YAMLEncoder) {
             $this->setYAMLEncoder($YAMLEncoder);
-        } 
-        else 
-        {
-            if (function_exists('yaml_emit')) 
-            {
+        } else {
+            if (function_exists('yaml_emit')) {
                 $this->setYAMLEncoder('yaml_emit');
             }
         }
     }
-    
+
     /**
      * @param callable $value
      */
@@ -39,7 +33,7 @@ class YAMLWriter implements WriterInterface
     {
         $this->YAMLEncoder = $value;
     }
-    
+
     /**
      * @return callable
      */
@@ -51,7 +45,7 @@ class YAMLWriter implements WriterInterface
     /**
      * {@inheritdoc}
      */
-    public function dump(array $data) 
+    public function dump(array $data)
     {
         return call_user_func($this->getYAMLEncoder(), $data);
     }
@@ -61,12 +55,12 @@ class YAMLWriter implements WriterInterface
      */
     public function export(array $data, $file)
     {
-        if (!strstr($file, '.yml'))
-        {
+        if (!strstr($file, '.yml')) {
             $file .= '.yml';
         }
-        
+
         file_put_contents($file, $this->dump($data));
+
         return file_exists($file);
     }
 }

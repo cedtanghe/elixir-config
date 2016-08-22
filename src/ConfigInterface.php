@@ -14,16 +14,18 @@ interface ConfigInterface extends \ArrayAccess
      * @param array $options
      */
     public function load($config, array $options = []);
-    
+
     /**
      * @param mixed $key
-     * @return boolean
+     *
+     * @return bool
      */
     public function has($key);
 
     /**
      * @param mixed $key
      * @param mixed $default
+     *
      * @return mixed
      */
     public function get($key, $default = null);
@@ -48,11 +50,12 @@ interface ConfigInterface extends \ArrayAccess
      * @param array $data
      */
     public function replace(array $data);
-    
+
     /**
      * @param WriterInterface $writer
-     * @param string $file
-     * @return boolean
+     * @param string          $file
+     *
+     * @return bool
      */
     public function export(WriterInterface $writer, $file);
 

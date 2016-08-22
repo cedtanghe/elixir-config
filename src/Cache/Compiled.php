@@ -2,7 +2,6 @@
 
 namespace Elixir\Config\Cache;
 
-use Elixir\Config\Cache\CacheableInterface;
 use Elixir\Config\Loader\LoaderFactory;
 use Elixir\Config\Loader\LoaderFactoryAwareTrait;
 use Elixir\Config\Writer\WriterFactory;
@@ -14,48 +13,47 @@ class Compiled implements CacheableInterface
 {
     use LoaderFactoryAwareTrait;
     use WriterFactoryAwareTrait;
-    
+
     /**
      * @var string|numeric|null
      */
     protected $cacheVersion = null;
-    
+
     /**
-     * @var string 
+     * @var string
      */
     protected $path;
 
     /**
-     * @var string 
+     * @var string
      */
     protected $file;
 
     /**
-     * @var boolean 
+     * @var bool
      */
     protected $build = true;
-    
+
     /**
-     * @var boolean 
+     * @var bool
      */
     protected $loaded = false;
-    
+
     /**
-     * @var array 
+     * @var array
      */
     protected $cachedata;
 
     /**
-     * @param string $path
-     * @param string $file
+     * @param string              $path
+     * @param string              $file
      * @param string|numeric|null $cacheVersion
      */
-    public function __construct($path = null, $file = 'config.cache', $cacheVersion = null) 
+    public function __construct($path = null, $file = 'config.cache', $cacheVersion = null)
     {
-        $path = $path ? : 'application' . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
-        
-        if (!is_dir($path)) 
-        {
+        $path = $path ?: 'application'.DIRECTORY_SEPARATOR.'storage'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR;
+
+        if (!is_dir($path)) {
             mkdir($path, 0777, true);
         }
 
@@ -63,7 +61,7 @@ class Compiled implements CacheableInterface
         $this->file = $file;
         $this->cacheVersion = $cacheVersion;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -71,7 +69,7 @@ class Compiled implements CacheableInterface
     {
         $this->cacheVersion = $value;
     }
-    
+
     /**
      * @return string|numeric|null
      */
@@ -79,47 +77,42 @@ class Compiled implements CacheableInterface
     {
         return $this->cacheVersion;
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function loadCache()
     {
-        if ($this->cacheLoaded())
-        {
+        if ($this->cacheLoaded()) {
             return false;
         }
-        
+
         $this->loaded = true;
-        
-        if (file_exists($this->getCacheFile()))
-        {
-            if (null === $this->loaderFactory)
-            {
+
+        if (file_exists($this->getCacheFile())) {
+            if (null === $this->loaderFactory) {
                 $this->loaderFactory = new LoaderFactory();
                 LoaderFactory::addProvider($this->loaderFactory);
             }
-            
+
             $loader = $this->loaderFactory->create($this->getCacheFile());
             $this->cachedata = $loader->load($this->getCacheFile());
-            
-            if (isset($this->cachedata['_version']) && $this->cachedata['_version'] !== $this->cacheVersion)
-            {
+
+            if (isset($this->cachedata['_version']) && $this->cachedata['_version'] !== $this->cacheVersion) {
                 $this->cachedata = null;
                 $this->build = true;
-                
+
                 return false;
             }
-            
+
             return $this->cachedata;
-        } 
-        else
-        {
+        } else {
             $this->build = true;
+
             return false;
         }
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -127,7 +120,7 @@ class Compiled implements CacheableInterface
     {
         return $this->loaded;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -135,31 +128,29 @@ class Compiled implements CacheableInterface
     {
         return !$this->build;
     }
-    
+
     /**
      * {@inheritdoc}
      */
-    public function exportToCache(array $data = null) 
+    public function exportToCache(array $data = null)
     {
-        if ($this->build)
-        {
+        if ($this->build) {
             $this->build = false;
-            
-            if (null === $this->writerFactory)
-            {
+
+            if (null === $this->writerFactory) {
                 $this->writerFactory = new WriterFactory();
                 WriterFactory::addProvider($this->writerFactory);
             }
-            
+
             $writer = $this->writerFactory->create($this->getCacheFile());
             $writed = $writer->export(['_version' => $this->cacheVersion] + $data, $this->getCacheFile());
-            
+
             return $writed;
         }
-        
+
         return false;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -168,20 +159,19 @@ class Compiled implements CacheableInterface
         $this->cachedata = null;
         $this->loaded = false;
         $this->build = true;
-        
-        if (file_exists($this->getCacheFile()))
-        {
+
+        if (file_exists($this->getCacheFile())) {
             unlink($this->getCacheFile());
         }
-        
+
         return true;
     }
-    
+
     /**
      * @return string
      */
-    protected function getCacheFile() 
+    protected function getCacheFile()
     {
-        return $this->path . DIRECTORY_SEPARATOR . $this->file;
+        return $this->path.DIRECTORY_SEPARATOR.$this->file;
     }
 }

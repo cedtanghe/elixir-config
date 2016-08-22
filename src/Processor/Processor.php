@@ -2,15 +2,13 @@
 
 namespace Elixir\Config\Processor;
 
-use Elixir\Config\Processor\ProcessorInterface;
-
 class Processor
 {
     /**
      * @var array
      */
     protected $processors = [];
-    
+
     /**
      * @param ProcessorInterface $processor
      */
@@ -22,19 +20,19 @@ class Processor
     /**
      * @return array
      */
-    public function getProcessors() 
+    public function getProcessors()
     {
         return $this->processors;
     }
-    
+
     /**
      * @param mixed $value
+     *
      * @return mixed;
      */
-    public function process($value) 
+    public function process($value)
     {
-        foreach ($this->processors as $processor) 
-        {
+        foreach ($this->processors as $processor) {
             $value = $processor->process($value);
         }
 

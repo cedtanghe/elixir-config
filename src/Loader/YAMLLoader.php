@@ -2,39 +2,34 @@
 
 namespace Elixir\Config\Loader;
 
-use Elixir\Config\Loader\ArrayLoader;
-
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-class YAMLLoader extends ArrayLoader 
+class YAMLLoader extends ArrayLoader
 {
     /**
-     * @var callable 
+     * @var callable
      */
     protected $YAMLEncoder;
-    
+
     /**
      * {@inheritdoc}
+     *
      * @param callable $YAMLEncoder
      */
     public function __construct($environment = null, $strict = false, callable $YAMLEncoder = null)
     {
         parent::__construct($environment, $strict);
-        
-        if (null !== $YAMLEncoder)
-        {
+
+        if (null !== $YAMLEncoder) {
             $this->setYAMLEncoder($YAMLEncoder);
-        } 
-        else 
-        {
-            if (function_exists('yaml_parse'))
-            {
+        } else {
+            if (function_exists('yaml_parse')) {
                 $this->setYAMLEncoder('yaml_parse');
             }
         }
     }
-    
+
     /**
      * @param callable $value
      */
@@ -42,7 +37,7 @@ class YAMLLoader extends ArrayLoader
     {
         $this->YAMLEncoder = $value;
     }
-    
+
     /**
      * @return callable
      */
@@ -50,17 +45,16 @@ class YAMLLoader extends ArrayLoader
     {
         return $this->YAMLEncoder;
     }
-    
+
     /**
      * {@inheritdoc}
      */
     public function load($config)
     {
-        if (is_file($config)) 
-        {
+        if (is_file($config)) {
             $config = file_get_contents($config);
         }
-        
+
         return parent::load(call_user_func($this->getYAMLEncoder(), $config));
     }
 }

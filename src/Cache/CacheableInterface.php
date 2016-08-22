@@ -5,31 +5,32 @@ namespace Elixir\Config\Cache;
 /**
  * @author Cédric Tanghe <ced.tanghe@gmail.com>
  */
-interface CacheableInterface 
+interface CacheableInterface
 {
     /**
      * @return array
      */
     public function loadCache();
-    
+
     /**
-     * @return boolean
+     * @return bool
      */
     public function cacheLoaded();
-    
+
     /**
-     * @return boolean
+     * @return bool
      */
     public function isFreshCache();
-    
+
     /**
      * @param array $data
-     * @return boolean
+     *
+     * @return bool
      */
     public function exportToCache(array $data = null);
-    
+
     /**
-     * @return boolean
+     * @return bool
      */
     public function invalidateCache();
 }
